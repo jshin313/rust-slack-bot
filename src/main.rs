@@ -1,5 +1,5 @@
-//
-// Copyright 2014-2016 the slack-rs authors.
+// Made by Jacob Shin 2020
+// Original Example Code: Copyright 2014-2016 the slack-rs authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// `cargo run --example slack_example -- <api_key>`
 //
-// This is a simple example of using slack-rs.
-// You can run it with `cargo run --example slack_example -- <api_key>`
-//
-// NOTE: This will post in the #general channel of the account you connect
-// to.
 //
 
 use slack;
@@ -35,15 +31,7 @@ impl slack::EventHandler for MyHandler {
             Event::ChannelJoined{channel} => println!("{:?}", channel),
             _ => println!(""),
         }
-
-    }
-
-    fn on_close(&mut self, cli: &RtmClient) {
-        println!("on_close");
-    }
-
-    fn on_connect(&mut self, cli: &RtmClient) {
-        println!("on_connect");
+        
         // find the general channel id from the `StartResponse`
         let general_channel_id = cli.start_response()
             .channels
@@ -58,8 +46,17 @@ impl slack::EventHandler for MyHandler {
                       })
             .and_then(|chan| chan.id.as_ref())
             .expect("general channel not found");
-        //let _ = cli.sender().send_message(&general_channel_id, "Hello world! (rtm)");
+        
         // Send a message over the real time api websocket
+        let _ = cli.sender().send_message(&general_channel_id, "Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.");
+    }
+
+    fn on_close(&mut self, cli: &RtmClient) {
+        println!("Closed connection.");
+    }
+
+    fn on_connect(&mut self, cli: &RtmClient) {
+        println!("Connected.");
     }
 }
 
