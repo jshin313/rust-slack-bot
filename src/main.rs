@@ -71,7 +71,10 @@ impl slack::EventHandler for MyHandler {
             .expect("general channel not found");
 
             // Send a message over the real time api websocket
-            let _ = cli.sender().send_message(&general_channel_id, "Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.");
+            let mut message = format!("Welcome {}", username); 
+            message.push_str("Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.";
+            
+            let _ = cli.sender().send_message(&general_channel_id, message);
 
             //self.on_close(cli);
         }
