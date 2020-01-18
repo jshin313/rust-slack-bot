@@ -19,40 +19,38 @@
 
 use slack;
 use slack::{Message, Event, RtmClient};
-use slack_api;
 
 struct MyHandler;
 
 #[allow(unused_variables)]
 impl slack::EventHandler for MyHandler {
     fn on_event(&mut self, cli: &RtmClient, event: Event) {
+
         //println!("{:?}", event);
 
         let mut joined = false;
+        let mut username = String::new();
 
         match event {
             Event::Message(message) => {
-                println!("{:?}", message);
+                //println!("{:?}", message);
 
                 match *message {
                     Message::ChannelJoin(m) => {
                         joined = true;
-                        println!("Someone joined the channel");
+
+                        username.push_str(&m.user.unwrap());
+
+                        println!("The new user {} has joined the channel.", username);
                     }
-                    _ => {
-                        println!("Other Message");
-                    }
+                    _ => (),
 
                 }
-                //println!("Someone Joined");
-                //println!("{:?}", message);
             }
             Event::Hello => {
-                println!("HELLO");
+                println!("Bot has successfully connected.");
             }
-            _ => {
-                println!("Other event occured.");
-            }
+            _ => (),
         }
 
         if joined {
@@ -74,8 +72,6 @@ impl slack::EventHandler for MyHandler {
 
             // Send a message over the real time api websocket
             let _ = cli.sender().send_message(&general_channel_id, "Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.");
-
-            joined = false;
 
             //self.on_close(cli);
         }
