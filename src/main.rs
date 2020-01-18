@@ -55,7 +55,7 @@ impl slack::EventHandler for MyHandler {
 
         if joined {
 
-            // find the general channel id from the `StartResponse`
+            // find the general IM channel id from the `StartResponse`
             let general_channel_id = cli.start_response()
                 .ims
                 .as_ref()
