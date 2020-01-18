@@ -1106,6 +1106,7 @@ name = "slackbot"
 version = "0.1.0"
 dependencies = [
  "slack 0.22.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slack_api 0.21.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

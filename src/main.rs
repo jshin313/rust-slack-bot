@@ -18,38 +18,68 @@
 //
 
 use slack;
-use slack::{Event, RtmClient};
+use slack::{Message, Event, RtmClient};
+use slack_api;
 
 struct MyHandler;
 
 #[allow(unused_variables)]
 impl slack::EventHandler for MyHandler {
     fn on_event(&mut self, cli: &RtmClient, event: Event) {
-        println!("{:?}", event);
+        //println!("{:?}", event);
+
+        let mut joined = false;
 
         match event {
-            Event::ChannelJoined{channel} => println!("{:?}", channel),
-            _ => println!(""),
+            Event::Message(message) => {
+                println!("{:?}", message);
+
+                match *message {
+                    Message::ChannelJoin(m) => {
+                        joined = true;
+                        println!("Someone joined the channel");
+                    }
+                    _ => {
+                        println!("Other Message");
+                    }
+
+                }
+                //println!("Someone Joined");
+                //println!("{:?}", message);
+            }
+            Event::Hello => {
+                println!("HELLO");
+            }
+            _ => {
+                println!("Other event occured.");
+            }
         }
-        
-        // find the general channel id from the `StartResponse`
-        let general_channel_id = cli.start_response()
-            .channels
-            .as_ref()
-            .and_then(|channels| {
-                          channels
-                              .iter()
-                              .find(|chan| match chan.name {
-                                        None => false,
-                                        Some(ref name) => name == "botspam",
-                                    })
-                      })
+
+        if joined {
+
+            // find the general channel id from the `StartResponse`
+            let general_channel_id = cli.start_response()
+                .channels
+                .as_ref()
+                .and_then(|channels| {
+                    channels
+                    .iter()
+                    .find(|chan| match chan.name {
+                        None => false,
+                        Some(ref name) => name == "botspam",
+                    })
+                })
             .and_then(|chan| chan.id.as_ref())
             .expect("general channel not found");
-        
-        // Send a message over the real time api websocket
-        let _ = cli.sender().send_message(&general_channel_id, "Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.");
-    }
+
+            // Send a message over the real time api websocket
+            let _ = cli.sender().send_message(&general_channel_id, "Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.");
+
+            joined = false;
+
+            //self.on_close(cli);
+        }
+}
 
     fn on_close(&mut self, cli: &RtmClient) {
         println!("Closed connection.");
