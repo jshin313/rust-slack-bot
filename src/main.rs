@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// `cargo run --example slack_example -- <api_key>`
+// `cargo run <api_key>`
 //
 //
 
@@ -57,23 +57,24 @@ impl slack::EventHandler for MyHandler {
 
             // find the general channel id from the `StartResponse`
             let general_channel_id = cli.start_response()
-                .channels
+                .ims
                 .as_ref()
-                .and_then(|channels| {
-                    channels
+                .and_then(|ims| {
+                    ims
                     .iter()
-                    .find(|chan| match chan.name {
+                    .find(|im| match im.user {
                         None => false,
-                        Some(ref name) => name == "botspam",
+                        Some(ref user) => user == &*username,
                     })
                 })
-            .and_then(|chan| chan.id.as_ref())
+            .and_then(|im| im.id.as_ref())
             .expect("general channel not found");
 
             // Send a message over the real time api websocket
             let mut welcome = format!("Welcome <@{}>\n", username);
             welcome.push_str("Welcome to the CCExtractor Slack Community!\nIf you're here for Google Code-In 2019 (GCI) you can go to https://gci2019.ccextractor.org/.\nIf you're here for Google Summer of Code, you can visit https://www.ccextractor.org/public:gsoc:google_summer_of_code_2019.\nFinally, if you're just looking to contribute or need help using CCExtractor, feel free to stick around, ask questions, or visit https://www.ccextractor.org/.");
 
+            println!("IM ID: {}", general_channel_id);
             let _ = cli.sender().send_message(&general_channel_id, &welcome);
 
             //self.on_close(cli);
@@ -92,7 +93,7 @@ impl slack::EventHandler for MyHandler {
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let api_key = match args.len() {
-        0 | 1 => panic!("No api-key in args! Usage: cargo run --example slack_example -- <api-key>"),
+        0 | 1 => panic!("No api-key in args! Usage: cargo run <api-key>"),
         x => args[x - 1].clone(),
     };
     let mut handler = MyHandler;
