@@ -13,12 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// `cargo run <api_key>`
+// `cargo run
 //
 //
 
 use slack;
 use slack::{Message, Event, RtmClient};
+use std::env;
+
 
 struct MyHandler;
 
@@ -91,11 +93,9 @@ impl slack::EventHandler for MyHandler {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let api_key = match args.len() {
-        0 | 1 => panic!("No api-key in args! Usage: cargo run <api-key>"),
-        x => args[x - 1].clone(),
-    };
+    // You can generate a legacy token to quickly test these apis
+    //https://api.slack.com/custom-integrations/legacy-tokens
+    let api_key = env::var("SLACK_API_TOKEN").map_err(|_| "SLACK_API_TOKEN env var must be set").unwrap();
     let mut handler = MyHandler;
     let r = RtmClient::login_and_run(&api_key, &mut handler);
     match r {

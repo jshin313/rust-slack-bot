@@ -9,7 +9,7 @@ So I had to create another user to mimic a bot instead of creating a real bot. I
 
 ## Usage
 `cargo run <api-token>`
-or when using the Dockerfile, make sure to replace <api-key> with the proper value.
+or when using the Dockerfile, build the Dockerfile with `docker build --api_key <value> (..)` with the proper value.
 
 ## Credits
 The code uses the [slack-rs](https://github.com/slack-rs/slack-rs) library extensively and is based upon the example [here](https://github.com/slack-rs/slack-rs/blob/master/examples/slack_example.rs).

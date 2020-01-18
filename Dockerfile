@@ -9,4 +9,7 @@ RUN curl https://sh.rustup.rs -sSf | sh
 RUN git clone https://github.com/jshin313/rust-slack-bot && \
     cd rust-slack-bot
 
-CMD cargo run <api-key>
+ARG api_key
+ENV SLACK_API_TOKEN=$api_key
+
+RUN cargo run
